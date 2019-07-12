@@ -6,3 +6,8 @@
   flex-direction: column;
   font-size: 2rem;
 }
+
+.ltrSpace {
+  letter-spacing: 5px;
+  text-transform: uppercase;
+}

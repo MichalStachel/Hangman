@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import './App.css';
+import Items from './Items.jsx';
+import words from './Words.js';
 
 class App extends Component {
   state = {
     letterKey: '',
     letter: '',
     secLetter: '',
-    words: ["home", "accurate", "deliver", "bear", "rice", "cooperative", "raise", "pray", "parent", "grudge", "mouse", "teacher", "accident", "dance", "vegetarian", "basin", "craftsman", "firm", "muscle", "toll"],
     word: '',
     draw: 0,
     letters: 0,
@@ -14,6 +15,8 @@ class App extends Component {
   }
 
   componentDidMount() {
+
+
     document.addEventListener('keydown', (e) => {
       this.setState({
         letterKey: e.key,
@@ -25,47 +28,68 @@ class App extends Component {
         letter: this.state.word.indexOf(this.state.letterKey),
         secLetter: this.state.word.lastIndexOf(this.state.letterKey)
       })
-
-      if (this.state.letter === -1) {
-        let separatedLettersWrong = [...this.state.separatedLettersWrong];
-        separatedLettersWrong.push(this.state.letterKey);
-        this.setState({
-          separatedLettersWrong
-        })
-        console.log(this.state.letter, this.state.secLetter);
-      } else if (this.state.letter !== -1) {
-        let separatedLettersRight = [...this.state.separatedLettersRight];
-        separatedLettersRight.push(this.state.letterKey)
-        this.setState({
-          separatedLettersRight
-        })
+      // Bad guess
+      if (this.state.separatedLettersWrong.includes(this.state.letterKey) === true && this.state.letter === -1) {
+        return;
+      } else {
+        if (this.state.letter === -1) {
+          let separatedLettersWrong = [...this.state.separatedLettersWrong];
+          separatedLettersWrong.push(this.state.letterKey);
+          this.setState(() => ({
+            separatedLettersWrong
+          }))
+          console.log(this.state.letter, this.state.secLetter);
+        }
       }
 
+      // Right guess
+      if (this.state.separatedLettersRight.includes(this.state.letterKey) === true && this.state.letter !== -1) {
+        return;
+      } else {
+        if (this.state.letter !== -1) {
+          let separatedLettersRight = [...this.state.separatedLettersRight];
+          separatedLettersRight.push(this.state.letterKey)
+          if (this.state.secLetter !== -1 && this.state.secLetter !== this.state.letter) { separatedLettersRight.push(this.state.letterKey) }
+          this.setState({
+            separatedLettersRight
+          })
+        }
+      }
     })
-
-
     this.randomWord();
   }
 
 
+  componentDidUpdate() {
+    if (this.state.separatedLettersRight.length === this.state.word.length) {
+      alert(`You Win!!!
+      The word is ${this.state.word}`)
+      this.randomWord();
+    }
+  }
+
+
   randomWord = () => {
-    const randomNumber = Math.floor(Math.random() * this.state.words.length);
+    console.log()
+    const randomNumber = Math.floor(Math.random() * words.length);
+    const word = words[this.state.draw]
     this.setState({
       draw: randomNumber,
-      word: this.state.words[this.state.draw],
-      letters: this.state.words[this.state.draw].length,
+      word,
+      letters: words[this.state.draw].length,
       separatedLettersRight: [],
       separatedLettersWrong: [],
     })
   }
 
   render() {
-    const { word, separatedLettersWrong } = this.state;
+    const { separatedLettersWrong } = this.state;
+
     return (
       <div className='App'>
         <button onClick={this.randomWord}>Draw a word</button>
-        <p>{separatedLettersWrong}</p>
-        <p>{word}</p>
+        Wrong:<p className='ltrSpace'>{separatedLettersWrong}</p>
+        <Items word={this.state.word} rightGuess={this.state.separatedLettersRight} />
       </div>
     );
   }
