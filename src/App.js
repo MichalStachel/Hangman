@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Items from './Items.jsx';
+import HangMan from './HangManImg.jsx';
 import words from './Words.js';
 
 class App extends Component {
@@ -12,6 +13,7 @@ class App extends Component {
     draw: 0,
     letters: 0,
     separatedLettersRight: [],
+    separatedLettersWrong: [],
   }
 
   componentDidMount() {
@@ -66,6 +68,13 @@ class App extends Component {
       The word is ${this.state.word}`)
       this.randomWord();
     }
+    if (this.state.separatedLettersWrong.length === 8) {
+      alert(`
+  The word was ${this.state.word}
+  Try again ;)`)
+      this.randomWord();
+    }
+
   }
 
 
@@ -87,9 +96,13 @@ class App extends Component {
 
     return (
       <div className='App'>
-        <button onClick={this.randomWord}>Draw a word</button>
-        Wrong:<p className='ltrSpace'>{separatedLettersWrong}</p>
-        <Items word={this.state.word} rightGuess={this.state.separatedLettersRight} />
+        <HangMan arrayWrong={this.state.separatedLettersWrong} />
+        <div  className='mrgDown'>
+          <button onClick={this.randomWord} className='btn'>Draw new word</button>
+          <h6>Wrong guess:</h6>
+          <p className='ltrSpace'>{separatedLettersWrong}</p>
+          <Items word={this.state.word} rightGuess={this.state.separatedLettersRight} />
+        </div>
       </div>
     );
   }
